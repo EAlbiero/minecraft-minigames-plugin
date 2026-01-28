@@ -1,14 +1,14 @@
 package ealb.ealb;
 
-import ealb.ealb.commands.StartBlockShuffle;
-import ealb.ealb.commands.StartDeathSwap;
-import ealb.ealb.commands.StopAllEvents;
+import ealb.ealb.commands.*;
 import ealb.ealb.handlers.WoodHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Random;
 
 public final class Ealb extends JavaPlugin {
 
@@ -17,20 +17,15 @@ public final class Ealb extends JavaPlugin {
         // Plugin startup logic
         Bukkit.getLogger().info("starting");
 
-        ItemStack bottle = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
+        //Challenges
+        getCommand("randomizeRecipes").setExecutor(new RandomizeRecipes());
 
-        ShapedRecipe expBottle = new ShapedRecipe(bottle);
-
-        expBottle.shape("*%*","%B%","*%*");
-
-        expBottle.setIngredient('*', Material.INK_SAC, 2);
-        expBottle.setIngredient('%', Material.SUGAR);
-        expBottle.setIngredient('B', Material.GLASS_BOTTLE);
-
-        getServer().addRecipe(expBottle);
-
+        // Minigames
         getCommand("startDeathSwap").setExecutor(new StartDeathSwap(this));
         getCommand("startBlockShuffle").setExecutor(new StartBlockShuffle(this));
+
+        // QOL commands
+        getCommand("setDefaultRecipes").setExecutor(new SetDefaultRecipes());
         getCommand("stopAllEvents").setExecutor(new StopAllEvents(this));
 
     }

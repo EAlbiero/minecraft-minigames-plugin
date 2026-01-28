@@ -3,6 +3,10 @@ version: '1.0-SNAPSHOT'
 main: ealb.ealb.Ealb
 api-version: '1.21'
 commands:
+  setDefaultRecipes:
+    description: Resets all recipes to default
+  randomizeRecipes:
+    description: Randomizes all recipes
   startDeathSwap:
     description: Starts Death Swap
   startBlockShuffle:
