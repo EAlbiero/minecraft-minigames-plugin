@@ -1,0 +1,11 @@
+name: ealb
+version: '1.0-SNAPSHOT'
+main: ealb.ealb.Ealb
+api-version: '1.21'
+commands:
+  startDeathSwap:
+    description: Starts Death Swap
+  startBlockShuffle:
+    description: Starts Block Shuffle
+  stopAllEvents:
+    description: Stops all existing tasks
