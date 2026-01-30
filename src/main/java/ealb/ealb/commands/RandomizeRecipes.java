@@ -20,6 +20,7 @@ public class RandomizeRecipes implements CommandExecutor {
             return true;
 
         Bukkit.broadcastMessage("Starting recipe randomization...");
+        Bukkit.resetRecipes();
 
         try {
             randomizeAllRecipes();
@@ -32,7 +33,6 @@ public class RandomizeRecipes implements CommandExecutor {
     }
 
     private void randomizeAllRecipes() {
-
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
         List<Recipe> recipes = new ArrayList<>();
         List<ItemStack> outputs = new ArrayList<>();
@@ -69,7 +69,7 @@ public class RandomizeRecipes implements CommandExecutor {
                     getServer().addRecipe(shuffledRecipe);
                 }
             } catch (Exception e) {
-              continue;
+                Bukkit.getLogger().warning(e.toString());
             }
         }
     }
@@ -84,23 +84,21 @@ public class RandomizeRecipes implements CommandExecutor {
     }
 
     private Recipe createRecipeWithNewOutput(Recipe original, ItemStack newOutput) {
-
-        if (original instanceof ShapedRecipe) {
-            ShapedRecipe shaped = (ShapedRecipe) original;
-            ShapedRecipe newRecipe = new ShapedRecipe(shaped.getKey(), newOutput);
-            newRecipe.shape(shaped.getShape());
-            shaped.getIngredientMap().forEach((c, choice) -> newRecipe.setIngredient(c.charValue(), choice.getData()));
-            return newRecipe;
+        if (original instanceof ShapedRecipe s) {
+            ShapedRecipe r = new ShapedRecipe(s.getKey(), newOutput);
+            r.shape(s.getShape());
+            s.getChoiceMap().forEach((c, choice) -> {
+                if (choice != null) r.setIngredient(c, choice);
+            });
+            return r;
         }
-
-        if (original instanceof ShapelessRecipe) {
-            ShapelessRecipe shapeless = (ShapelessRecipe) original;
-            ShapelessRecipe newRecipe = new ShapelessRecipe(shapeless.getKey(), newOutput);
-            shapeless.getIngredientList().forEach(choice -> newRecipe.addIngredient(choice.getData()));
-            return newRecipe;
+        if (original instanceof ShapelessRecipe s) {
+            ShapelessRecipe r = new ShapelessRecipe(s.getKey(), newOutput);
+            s.getChoiceList().forEach(choice -> {
+                if (choice != null) r.addIngredient(choice);
+            });
+            return r;
         }
-
-
         return null;
     }
 }
