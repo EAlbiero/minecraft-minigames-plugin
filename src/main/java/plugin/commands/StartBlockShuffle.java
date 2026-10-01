@@ -1,6 +1,6 @@
 package plugin.commands;
 
-import plugin.Plugin;
+import plugin.CustomPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +13,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.*;
 
 public class StartBlockShuffle implements CommandExecutor {
-    private Plugin plugin2;
+    private CustomPlugin customPlugin2;
 
     private HashMap<String, Boolean> playerBlockFound = new HashMap<>();
     private HashMap<String, Material> playerBlock = new HashMap<>();
@@ -41,8 +41,8 @@ public class StartBlockShuffle implements CommandExecutor {
             .toList();
 
 
-    public StartBlockShuffle(Plugin plugin){
-        plugin2 = plugin;
+    public StartBlockShuffle(CustomPlugin customPlugin){
+        customPlugin2 = customPlugin;
     }
 
     @Override
@@ -59,8 +59,8 @@ public class StartBlockShuffle implements CommandExecutor {
         Bukkit.broadcastMessage("Starting Block Shuffle!");
         startRound();
 
-        Bukkit.getScheduler().runTaskTimer(plugin2, this::checkBlock, 0, 10);
-        Bukkit.getScheduler().runTaskTimer(plugin2, this::checkAllPlayersFoundTheirBlocks, 0, 10);
+        Bukkit.getScheduler().runTaskTimer(customPlugin2, this::checkBlock, 0, 10);
+        Bukkit.getScheduler().runTaskTimer(customPlugin2, this::checkAllPlayersFoundTheirBlocks, 0, 10);
 
 
         return true;
@@ -72,7 +72,7 @@ public class StartBlockShuffle implements CommandExecutor {
            timeEndTask.cancel();
 
         announceBlock();
-        timeEndTask = Bukkit.getScheduler().runTaskLater(plugin2, this::timeEndsLoss, swapTimerSeconds*20);
+        timeEndTask = Bukkit.getScheduler().runTaskLater(customPlugin2, this::timeEndsLoss, swapTimerSeconds*20);
     }
 
     private void timeEndsLoss() {

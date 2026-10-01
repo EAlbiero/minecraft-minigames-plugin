@@ -1,6 +1,6 @@
 package plugin.commands;
 
-import plugin.Plugin;
+import plugin.CustomPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -12,14 +12,14 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.Collection;
 
 public class StartDeathSwap implements CommandExecutor {
-    private Plugin plugin2;
+    private CustomPlugin customPlugin2;
 
     private int timeSwapMsg = 10;
     private int swapTimerSeconds = 5*60;
     private BukkitTask announcementTimer;
 
-    public StartDeathSwap(Plugin plugin){
-        plugin2 = plugin;
+    public StartDeathSwap(CustomPlugin customPlugin){
+        customPlugin2 = customPlugin;
     }
 
     @Override
@@ -29,9 +29,9 @@ public class StartDeathSwap implements CommandExecutor {
 
         Bukkit.broadcastMessage("Starting Death Swap!");
 
-        Bukkit.getScheduler().runTaskTimer(plugin2, this::Swap, 20*swapTimerSeconds, 20*swapTimerSeconds);
+        Bukkit.getScheduler().runTaskTimer(customPlugin2, this::Swap, 20*swapTimerSeconds, 20*swapTimerSeconds);
 
-        Bukkit.getScheduler().runTaskTimer(plugin2, this::announceSwap, 0, 20*swapTimerSeconds);
+        Bukkit.getScheduler().runTaskTimer(customPlugin2, this::announceSwap, 0, 20*swapTimerSeconds);
         return true;
     }
 
@@ -46,7 +46,7 @@ public class StartDeathSwap implements CommandExecutor {
 
     private void announceSwap(){
         int t = timeSwapMsg;
-        announcementTimer = Bukkit.getScheduler().runTaskTimer(plugin2, this::sendMessage, 20*(swapTimerSeconds - t), 20);
+        announcementTimer = Bukkit.getScheduler().runTaskTimer(customPlugin2, this::sendMessage, 20*(swapTimerSeconds - t), 20);
     }
 
     private void Swap(){

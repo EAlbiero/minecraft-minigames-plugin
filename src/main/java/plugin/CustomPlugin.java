@@ -3,8 +3,11 @@ package plugin;
 import plugin.commands.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import plugin.handlers.ChunkDamageHandler;
 
-public final class Plugin extends JavaPlugin {
+public final class CustomPlugin extends JavaPlugin {
+
+    PluginConfig pluginConfig = new PluginConfig();
 
     @Override
     public void onEnable() {
@@ -13,6 +16,7 @@ public final class Plugin extends JavaPlugin {
 
         //Challenges
         getCommand("randomizeRecipes").setExecutor(new RandomizeRecipes());
+        new ChunkDamageHandler(this);
 
         // Minigames
         getCommand("startDeathSwap").setExecutor(new StartDeathSwap(this));

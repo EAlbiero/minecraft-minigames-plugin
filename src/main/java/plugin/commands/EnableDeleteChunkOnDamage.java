@@ -1,26 +1,25 @@
 package plugin.commands;
 
-import plugin.CustomPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import plugin.CustomPlugin;
 
-public class StopAllEvents implements CommandExecutor {
+import static org.bukkit.Bukkit.getServer;
+
+public class EnableDeleteChunkOnDamage implements CommandExecutor {
     private CustomPlugin customPlugin;
-
-    public StopAllEvents(CustomPlugin p) {
-        customPlugin = p;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
         if (!(sender instanceof Player))
             return true;
 
-       Bukkit.getScheduler().cancelTasks(customPlugin);
-       Bukkit.broadcastMessage("Cancelling all tasks");
-       return true;
+        getServer().resetRecipes();
+        Bukkit.broadcastMessage("Set all recipes to default");
+
+        return true;
     }
 }
