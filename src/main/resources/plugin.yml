@@ -1,6 +1,6 @@
 name: ealb
 version: '1.0-SNAPSHOT'
-main: ealb.ealb.Ealb
+main: plugin.Plugin
 api-version: '1.21'
 commands:
   setDefaultRecipes:

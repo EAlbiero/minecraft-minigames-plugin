@@ -1,6 +1,6 @@
-package ealb.ealb.commands;
+package plugin.commands;
 
-import ealb.ealb.Ealb;
+import plugin.Plugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +13,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.*;
 
 public class StartBlockShuffle implements CommandExecutor {
-    private Ealb plugin2;
+    private Plugin plugin2;
 
     private HashMap<String, Boolean> playerBlockFound = new HashMap<>();
     private HashMap<String, Material> playerBlock = new HashMap<>();
@@ -41,7 +41,7 @@ public class StartBlockShuffle implements CommandExecutor {
             .toList();
 
 
-    public StartBlockShuffle(Ealb plugin){
+    public StartBlockShuffle(Plugin plugin){
         plugin2 = plugin;
     }
 

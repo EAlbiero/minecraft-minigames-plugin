@@ -1,16 +1,10 @@
-package ealb.ealb;
+package plugin;
 
-import ealb.ealb.commands.*;
-import ealb.ealb.handlers.WoodHandler;
+import plugin.commands.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Random;
-
-public final class Ealb extends JavaPlugin {
+public final class Plugin extends JavaPlugin {
 
     @Override
     public void onEnable() {

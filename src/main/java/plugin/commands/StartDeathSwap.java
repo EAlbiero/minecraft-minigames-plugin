@@ -1,27 +1,24 @@
-package ealb.ealb.commands;
+package plugin.commands;
 
-import ealb.ealb.Ealb;
+import plugin.Plugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.util.Collection;
 
 public class StartDeathSwap implements CommandExecutor {
-    private Ealb plugin2;
+    private Plugin plugin2;
 
     private int timeSwapMsg = 10;
     private int swapTimerSeconds = 5*60;
     private BukkitTask announcementTimer;
 
-    public StartDeathSwap(Ealb plugin){
+    public StartDeathSwap(Plugin plugin){
         plugin2 = plugin;
     }
 

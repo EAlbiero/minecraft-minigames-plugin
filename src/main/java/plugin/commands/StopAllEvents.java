@@ -1,6 +1,6 @@
-package ealb.ealb.commands;
+package plugin.commands;
 
-import ealb.ealb.Ealb;
+import plugin.Plugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,9 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class StopAllEvents implements CommandExecutor {
-    private Ealb plugin;
+    private Plugin plugin;
 
-    public StopAllEvents(Ealb p) {
+    public StopAllEvents(Plugin p) {
         plugin = p;
     }
 
