@@ -4,7 +4,7 @@ This project is a Bukkit Minecraft plugin that allows you to pick and choose min
 
 This project can be run locally for testing using a Spigot server.
 
-1. Download [Spigot]([url](https://getbukkit.org/download/spigot)) from the official website.
+1. Download [Spigot](https://getbukkit.org/download/spigot) from the official website.
 2. Create a `Server` directory in your computer and save the Spigot .jar file in there
 3. Start the server by going to the `Server` directory and running
 
