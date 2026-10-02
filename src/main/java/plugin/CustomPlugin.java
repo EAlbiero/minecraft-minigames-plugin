@@ -7,16 +7,19 @@ import plugin.handlers.ChunkDamageHandler;
 
 public final class CustomPlugin extends JavaPlugin {
 
-    PluginConfig pluginConfig = new PluginConfig();
-
     @Override
     public void onEnable() {
         // Plugin startup logic
         Bukkit.getLogger().info("starting");
 
-        //Challenges
-        getCommand("randomizeRecipes").setExecutor(new RandomizeRecipes());
+        // Handlers
         new ChunkDamageHandler(this);
+
+        // Challenges
+        getCommand("randomizeRecipes").setExecutor(new RandomizeRecipes());
+        getCommand("toggleDeleteChunkOnDamage").setExecutor(new ToggleDeleteChunkOnDamage());
+        getCommand("setDeleteChunkDelay").setExecutor(new SetDeleteChunkDelay());
+        getCommand("setDeleteChunkPenalty").setExecutor(new SetDeleteChunkPenalty());
 
         // Minigames
         getCommand("startDeathSwap").setExecutor(new StartDeathSwap(this));

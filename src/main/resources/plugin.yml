@@ -1,15 +1,25 @@
-name: ealb
+name: minigames-plugin
 version: '1.0-SNAPSHOT'
 main: plugin.CustomPlugin
-api-version: '1.21'
+api-version: '1.26'
 commands:
-  setDefaultRecipes:
-    description: Resets all recipes to default
   randomizeRecipes:
     description: Randomizes all recipes
+  setDefaultRecipes:
+    description: Resets all recipes to default
+
+  toggleDeleteChunkOnDamage:
+    description: Enables/Disables deleting chunk upon player receiving damage. Can be further configured using setDeleteChunkDelay and setDeleteChunkPenalty
+  setDeleteChunkDelay:
+    description: Delay in seconds for a chunk to be deleted after a player receives damage.
+  setDeleteChunkPenalty:
+    description: Sets how many seconds will be removed from the timer once a player takes damage in a chunk queued for deletion.
+
   startDeathSwap:
     description: Starts Death Swap
+
   startBlockShuffle:
     description: Starts Block Shuffle
+
   stopAllEvents:
     description: Stops all existing tasks

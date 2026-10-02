@@ -1,17 +1,15 @@
 package plugin.handlers;
 
-import org.bukkit.Chunk;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import plugin.CustomPlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import plugin.PluginConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,22 +18,25 @@ import static java.lang.Thread.sleep;
 
 public class ChunkDamageHandler implements Listener {
     public static List<Chunk> deletedChunks = new ArrayList<Chunk>();
+    public static Chunk chunkToBeDeleted;
+    private CustomPlugin plugin;
 
     public ChunkDamageHandler(CustomPlugin customPlugin) {
+        plugin = customPlugin;
         Bukkit.getPluginManager().registerEvents(this, customPlugin);
     }
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) throws InterruptedException {
-        Bukkit.getLogger().info("Event detected");
+        if (!PluginConfig.getInstance().isDeleteChunkEnabled()) {return;}
         EntityType entityType = event.getEntityType();
         if (entityType != EntityType.PLAYER) return;
-        Entity player = event.getEntity();
-        Bukkit.getLogger().info("Player damage detected");
-        Chunk c = getEntityChunk(player);
-        Bukkit.getLogger().info("Deleting chunk");
 
-        deleteChunk(c);
+        Entity player = event.getEntity();
+        chunkToBeDeleted = getEntityChunk(player);
+
+        Bukkit.getLogger().info("Deleting chunk");
+        Bukkit.getScheduler().runTaskLater(plugin, this::deleteChunk, 20*PluginConfig.getInstance().getDeleteChunkDelaySeconds());
         Bukkit.getLogger().info("Chunk deleted");
 
     }
@@ -44,7 +45,8 @@ public class ChunkDamageHandler implements Listener {
         return entity.getLocation().getChunk();
     }
 
-    private void deleteChunk(Chunk chunk) throws InterruptedException {
+    private void deleteChunk() {
+        Chunk chunk = chunkToBeDeleted;
         if (deletedChunks.contains(chunk)) return;
         deletedChunks.add(chunk);
 
@@ -57,5 +59,7 @@ public class ChunkDamageHandler implements Listener {
                 }
             }
         }
+
     }
+
 }

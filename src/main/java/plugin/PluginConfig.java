@@ -1,13 +1,21 @@
 package plugin;
 
-public class PluginConfig {
-    private boolean deleteChunk = false;
+import lombok.Getter;
+import lombok.Setter;
 
-    public PluginConfig() {}
-    public boolean getDeleteChunk() {
-        return this.deleteChunk;
-    }
-    public void setDeleteChunk(boolean newValue) {
-        this.deleteChunk = newValue;
+@Getter
+@Setter
+public final class PluginConfig {
+    private static final PluginConfig instance = new PluginConfig();
+
+    // Settings
+    private volatile boolean deleteChunkEnabled = false;
+    private volatile int deleteChunkDelaySeconds = 5;
+    private volatile int deleteChunkPenaltySeconds = 2;
+
+    private PluginConfig() {}
+
+    public static PluginConfig getInstance() {
+        return instance;
     }
 }
