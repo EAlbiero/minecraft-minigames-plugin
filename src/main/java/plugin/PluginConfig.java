@@ -12,6 +12,7 @@ public final class PluginConfig {
     private volatile boolean deleteChunkEnabled = false;
     private volatile int deleteChunkDelaySeconds = 5;
     private volatile int deleteChunkPenaltySeconds = 2;
+    private volatile int chunkHighlightIntervalTicks = 10;
 
     private PluginConfig() {}
 
