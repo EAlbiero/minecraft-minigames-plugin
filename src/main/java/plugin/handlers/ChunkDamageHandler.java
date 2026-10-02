@@ -5,10 +5,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.scheduler.BukkitTask;
 import plugin.CustomPlugin;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import plugin.PluginConfig;
 import plugin.common.Tasks;
@@ -20,8 +18,6 @@ import static java.lang.Thread.sleep;
 
 public class ChunkDamageHandler implements Listener {
     public static List<Chunk> deletedChunks = new ArrayList<Chunk>();
-    public static Chunk chunkToBeDeleted;
-    public static double renderHeight;
     private CustomPlugin plugin;
 
     public ChunkDamageHandler(CustomPlugin customPlugin) {
@@ -36,13 +32,18 @@ public class ChunkDamageHandler implements Listener {
         if (entityType != EntityType.PLAYER) return;
 
         Entity player = event.getEntity();
-        renderHeight = player.getLocation().getY() + 0.2; // 0.2 offset so that particles are rendered slightly above the ground
-        chunkToBeDeleted = getEntityChunk(player);
+        double playerY = player.getLocation().getY() + 0.2; // 0.2 offset so that particles are rendered slightly above the ground
+        Chunk chunkToBeDeleted = getEntityChunk(player);
 
-        Bukkit.getLogger().info("Deleting chunk");
-        BukkitTask highlightTask = Bukkit.getScheduler().runTaskTimer(plugin, this::highlightChunkToBeDeleted,0, PluginConfig.getInstance().getChunkHighlightIntervalTicks());
+        BukkitTask highlightTask = Bukkit.getScheduler().runTaskTimer(plugin
+                , () -> highlightChunkToBeDeleted(chunkToBeDeleted, playerY)
+                ,0, PluginConfig.getInstance().getChunkHighlightIntervalTicks());
+
         Tasks.cancelTaskLater(plugin, highlightTask, 20*PluginConfig.getInstance().getDeleteChunkDelaySeconds());
-        Bukkit.getScheduler().runTaskLater(plugin, this::deleteChunk, 20*PluginConfig.getInstance().getDeleteChunkDelaySeconds());
+
+        Bukkit.getScheduler().runTaskLater(plugin
+                , () -> deleteChunk(chunkToBeDeleted)
+                , 20*PluginConfig.getInstance().getDeleteChunkDelaySeconds());
         Bukkit.getLogger().info("Chunk deleted");
 
     }
@@ -53,8 +54,7 @@ public class ChunkDamageHandler implements Listener {
 
 
 
-    private void deleteChunk() {
-        Chunk chunk = chunkToBeDeleted;
+    private void deleteChunk(Chunk chunk) {
         if (deletedChunks.contains(chunk)) return;
         deletedChunks.add(chunk);
 
@@ -69,10 +69,10 @@ public class ChunkDamageHandler implements Listener {
         }
 
     }
-    private void highlightChunkToBeDeleted() {
-        highlightChunk(chunkToBeDeleted, renderHeight);
-        highlightChunk(chunkToBeDeleted, renderHeight+1);
-        highlightChunk(chunkToBeDeleted, renderHeight+2);
+    private void highlightChunkToBeDeleted(Chunk chunk, double renderHeight) {
+        highlightChunk(chunk, renderHeight);
+        highlightChunk(chunk, renderHeight+1);
+        highlightChunk(chunk, renderHeight+2);
     }
 
     private void highlightChunk(Chunk chunk, double y) {
@@ -85,6 +85,9 @@ public class ChunkDamageHandler implements Listener {
 
         Particle.DustOptions dust =
                 new Particle.DustOptions(Color.RED, 1.0f);
+        if (world.getEnvironment().equals(World.Environment.NETHER)) {
+            dust = new Particle.DustOptions(Color.LIME, 1.0f);
+        }
 
         for (double offset = 0; offset < 16; offset += 0.5) {
             world.spawnParticle(

@@ -10,12 +10,10 @@ public class Tasks {
     protected static BukkitTask task;
 
     public static void cancelTaskLater(Plugin plugin, BukkitTask task, int delay) {
-        Tasks.task = task;
-        Bukkit.getScheduler().runTaskLater(plugin, Tasks::cancelTask, delay);
-
+        Bukkit.getScheduler().runTaskLater(plugin, () ->cancelTask(task), delay);
     }
 
-    private static void cancelTask() {
+    private static void cancelTask(BukkitTask task) {
         Bukkit.getScheduler().cancelTask(task.getTaskId());
     }
 }
