@@ -1,22 +1,26 @@
 package plugin.handlers;
 
 import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.WorldInfo;
 import org.bukkit.scheduler.BukkitTask;
 import plugin.CustomPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import plugin.PluginConfig;
+import plugin.common.ProgressBar;
 import plugin.common.Tasks;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChunkDamageHandler implements Listener {
-    public static List<Chunk> deletedChunks = new ArrayList<Chunk>();
+    public static List<Chunk> deletedChunks = new ArrayList<>();
     private CustomPlugin plugin;
 
     public ChunkDamageHandler(CustomPlugin customPlugin) {
@@ -27,29 +31,41 @@ public class ChunkDamageHandler implements Listener {
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) throws InterruptedException {
         if (!PluginConfig.getInstance().isDeleteChunkEnabled()) {return;}
+
         EntityType entityType = event.getEntityType();
         if (entityType != EntityType.PLAYER) return;
 
-        if (event.getFinalDamage() <=0) {return;}
+        Entity player = event.getEntity();
+        Chunk chunkToBeDeleted = getEntityChunk(player);
+        if (deletedChunks.contains(chunkToBeDeleted)) return;
+        if (event.getFinalDamage() <=0) return;
 
         String playerName = event.getEntity().getName();
         Bukkit.broadcastMessage(
                 ChatColor.RED + "" + ChatColor.BOLD + "Warning! Player " + playerName + " took damage"
         );
 
-        Entity player = event.getEntity();
-        double playerY = player.getLocation().getY() + 0.2; // 0.2 offset so that particles are rendered slightly above the ground
-        Chunk chunkToBeDeleted = getEntityChunk(player);
-
+        deletedChunks.add(chunkToBeDeleted);
         BukkitTask highlightTask = Bukkit.getScheduler().runTaskTimer(plugin
-                , () -> highlightChunkToBeDeleted(chunkToBeDeleted, playerY)
+                , () -> highlightChunkToBeDeleted(chunkToBeDeleted)
                 ,0, PluginConfig.getInstance().getChunkHighlightIntervalTicks());
 
-        Tasks.cancelTaskLater(plugin, highlightTask, 20*PluginConfig.getInstance().getDeleteChunkDelaySeconds());
+        ProgressBar progressBar = new ProgressBar(""
+                , (chunkToBeDeleted
+                .getWorld()
+                .getEnvironment()
+                .equals(World.Environment.NETHER)) ? BarColor.GREEN : BarColor.RED
+                , chunkToBeDeleted
+                , PluginConfig.getInstance().getDeleteChunkDelaySeconds());
+        progressBar.lockToTask(highlightTask);
+
+        Tasks.cancelTaskLater(plugin
+                , highlightTask
+                , 20*PluginConfig.getInstance().getDeleteChunkDelaySeconds());
 
         Bukkit.getScheduler().runTaskLater(plugin
                 , () -> deleteChunk(chunkToBeDeleted)
-                , 20*PluginConfig.getInstance().getDeleteChunkDelaySeconds());
+                , 20L *PluginConfig.getInstance().getDeleteChunkDelaySeconds());
         Bukkit.getLogger().info("Chunk deleted");
 
     }
@@ -59,8 +75,6 @@ public class ChunkDamageHandler implements Listener {
     }
 
     private void deleteChunk(Chunk chunk) {
-        if (deletedChunks.contains(chunk)) return;
-        deletedChunks.add(chunk);
 
         World world = chunk.getWorld();
         for (int x = 0; x < 16; x++) {
@@ -74,7 +88,7 @@ public class ChunkDamageHandler implements Listener {
         deletedChunks.remove(chunk);
 
     }
-    private void highlightChunkToBeDeleted(Chunk chunk, double renderHeight) {
+    private void highlightChunkToBeDeleted(Chunk chunk) {
         double dh = 20;
         double yMax;
         double yMin;
