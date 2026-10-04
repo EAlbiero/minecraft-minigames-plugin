@@ -3,6 +3,7 @@ package plugin.handlers;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import plugin.CustomPlugin;
 import org.bukkit.event.EventHandler;
@@ -13,8 +14,6 @@ import plugin.common.Tasks;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Thread.sleep;
 
 public class ChunkDamageHandler implements Listener {
     public static List<Chunk> deletedChunks = new ArrayList<Chunk>();
@@ -30,6 +29,13 @@ public class ChunkDamageHandler implements Listener {
         if (!PluginConfig.getInstance().isDeleteChunkEnabled()) {return;}
         EntityType entityType = event.getEntityType();
         if (entityType != EntityType.PLAYER) return;
+
+        if (event.getFinalDamage() <=0) {return;}
+
+        String playerName = event.getEntity().getName();
+        Bukkit.broadcastMessage(
+                ChatColor.RED + "" + ChatColor.BOLD + "Warning! Player " + playerName + " took damage"
+        );
 
         Entity player = event.getEntity();
         double playerY = player.getLocation().getY() + 0.2; // 0.2 offset so that particles are rendered slightly above the ground
@@ -52,8 +58,6 @@ public class ChunkDamageHandler implements Listener {
         return entity.getLocation().getChunk();
     }
 
-
-
     private void deleteChunk(Chunk chunk) {
         if (deletedChunks.contains(chunk)) return;
         deletedChunks.add(chunk);
@@ -67,12 +71,23 @@ public class ChunkDamageHandler implements Listener {
                 }
             }
         }
+        deletedChunks.remove(chunk);
 
     }
     private void highlightChunkToBeDeleted(Chunk chunk, double renderHeight) {
-        highlightChunk(chunk, renderHeight);
-        highlightChunk(chunk, renderHeight+1);
-        highlightChunk(chunk, renderHeight+2);
+        double dh = 20;
+        double yMax;
+        double yMin;
+        World world = chunk.getWorld();
+        List<Player> players = world.getPlayers();
+        for (Player player : players) {
+            yMin=player.getLocation().getY();
+            yMax=yMin+dh;
+            for (double i = yMin; i < yMax; i+=3) {
+                highlightChunk(chunk, i);
+            }
+        }
+
     }
 
     private void highlightChunk(Chunk chunk, double y) {
