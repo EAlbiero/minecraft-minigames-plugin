@@ -1,6 +1,7 @@
 package plugin.handlers;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Entity;
@@ -75,63 +76,82 @@ public class ChunkDamageHandler implements Listener {
     }
 
     private void deleteChunk(Chunk chunk) {
-
         World world = chunk.getWorld();
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = world.getMinHeight(); y < world.getMaxHeight(); y++) {
-                    if (chunk.getBlock(x, y, z).getType() == Material.AIR) {continue;}
-                    chunk.getBlock(x, y, z).setType(Material.AIR, false);
+        int minY = world.getMinHeight();
+        int maxY = world.getMaxHeight();
+        long startedAt = System.nanoTime();
+        int changedBlocks = 0;
+
+        try {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    for (int y = minY; y < maxY; y++) {
+                        Block block = chunk.getBlock(x, y, z);
+                        if (block.getType().isAir()) {
+                            continue;
+                        }
+                        block.setType(Material.AIR, false);
+                        changedBlocks++;
+                    }
                 }
             }
+        } finally {
+            deletedChunks.remove(chunk);
         }
-        deletedChunks.remove(chunk);
 
+        double elapsedMs = (System.nanoTime() - startedAt) / 1_000_000.0;
+        plugin.getLogger().info(
+                "Deleted chunk (%d, %d) in %s: %,d blocks, %.2f ms"
+                        .formatted(chunk.getX(), chunk.getZ(), world.getName(), changedBlocks, elapsedMs)
+        );
     }
+
     private void highlightChunkToBeDeleted(Chunk chunk) {
-        double dh = 20;
-        double yMax;
-        double yMin;
         World world = chunk.getWorld();
-        List<Player> players = world.getPlayers();
-        for (Player player : players) {
-            yMin=player.getLocation().getY();
-            yMax=yMin+dh;
-            for (double i = yMin; i < yMax; i+=3) {
-                highlightChunk(chunk, i);
-            }
-        }
-
-    }
-
-    private void highlightChunk(Chunk chunk, double y) {
-        World world = chunk.getWorld();
-
         int minX = chunk.getX() * 16;
         int minZ = chunk.getZ() * 16;
         int maxX = minX + 16;
         int maxZ = minZ + 16;
+        double viewDistance = 48.0;
+        double viewDistanceSquared = viewDistance * viewDistance;
 
-        Particle.DustOptions dust =
-                new Particle.DustOptions(Color.RED, 1.0f);
-        if (world.getEnvironment().equals(World.Environment.NETHER)) {
-            dust = new Particle.DustOptions(Color.LIME, 1.0f);
+        Color color = world.getEnvironment() == World.Environment.NETHER
+                ? Color.LIME : Color.RED;
+        Particle.DustOptions dust = new Particle.DustOptions(color, 1.0f);
+
+        for (Player player : world.getPlayers()) {
+            Location location = player.getLocation();
+            double nearestX = Math.max(minX, Math.min(location.getX(), maxX));
+            double nearestZ = Math.max(minZ, Math.min(location.getZ(), maxZ));
+            double dx = location.getX() - nearestX;
+            double dz = location.getZ() - nearestZ;
+            if (dx * dx + dz * dz > viewDistanceSquared) {
+                continue;
+            }
+
+            double startY = location.getY();
+            for (double y = startY; y < startY + 20; y += 3) {
+                highlightChunk(player, minX, minZ, maxX, maxZ, y, dust);
+            }
         }
+    }
 
-        for (double offset = 0; offset < 16; offset += 0.5) {
-            world.spawnParticle(
+    private void highlightChunk(Player player, int minX, int minZ, int maxX, int maxZ,
+                                double y, Particle.DustOptions dust) {
+        for (int offset = 0; offset < 16; offset++) {
+            player.spawnParticle(
                     Particle.DUST, minX + offset, y, minZ,
                     1, 0, 0, 0, 0, dust);
 
-            world.spawnParticle(
+            player.spawnParticle(
                     Particle.DUST, maxX, y, minZ + offset,
                     1, 0, 0, 0, 0, dust);
 
-            world.spawnParticle(
+            player.spawnParticle(
                     Particle.DUST, maxX - offset, y, maxZ,
                     1, 0, 0, 0, 0, dust);
 
-            world.spawnParticle(
+            player.spawnParticle(
                     Particle.DUST, minX, y, maxZ - offset,
                     1, 0, 0, 0, 0, dust);
         }

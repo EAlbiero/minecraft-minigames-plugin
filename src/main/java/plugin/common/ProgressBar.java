@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -100,11 +101,11 @@ public class ProgressBar {
     }
 
     private boolean isPlayerInsideChunk(Player player) {
-        Chunk playerChunk = player.getLocation().getChunk();
+        Location location = player.getLocation();
 
-        return playerChunk.getWorld().equals(this.getChunk().getWorld())
-                && playerChunk.getX() == this.getChunk().getX()
-                && playerChunk.getZ() == this.getChunk().getZ();
+        return this.getChunk().getWorld().equals(location.getWorld())
+                && (location.getBlockX() >> 4) == this.getChunk().getX()
+                && (location.getBlockZ() >> 4) == this.getChunk().getZ();
     }
 
     private void addPlayer(Player player) {
@@ -118,10 +119,13 @@ public class ProgressBar {
     }
 
     private void updateVisibility() {
-       for (Player player : Bukkit.getOnlinePlayers()) {
-           if (this.isPlayerInsideChunk(player)) {this.addPlayer(player);}
-           if (!this.isPlayerInsideChunk(player)) {this.removePlayer(player);}
-       }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (this.isPlayerInsideChunk(player)) {
+                this.addPlayer(player);
+            } else {
+                this.removePlayer(player);
+            }
+        }
     }
 
     private void removeBar() {
