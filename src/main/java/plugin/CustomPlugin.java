@@ -4,6 +4,7 @@ import plugin.commands.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import plugin.handlers.ChunkDamageHandler;
+import plugin.handlers.PlayerDeathHandler;
 
 public final class CustomPlugin extends JavaPlugin {
 
@@ -14,6 +15,7 @@ public final class CustomPlugin extends JavaPlugin {
 
         // Handlers
         new ChunkDamageHandler(this);
+        new PlayerDeathHandler(this);
 
         // Challenges
         getCommand("randomizeRecipes").setExecutor(new RandomizeRecipes());
@@ -28,6 +30,7 @@ public final class CustomPlugin extends JavaPlugin {
         // QOL commands
         getCommand("setDefaultRecipes").setExecutor(new SetDefaultRecipes());
         getCommand("stopAllEvents").setExecutor(new StopAllEvents(this));
+        getCommand("coord").setExecutor(new Coord());
 
     }
 

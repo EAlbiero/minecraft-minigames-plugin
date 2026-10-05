@@ -23,3 +23,5 @@ commands:
 
   stopAllEvents:
     description: Stops all existing tasks
+  coord:
+    description: Send current XYZ coordinates in chat
