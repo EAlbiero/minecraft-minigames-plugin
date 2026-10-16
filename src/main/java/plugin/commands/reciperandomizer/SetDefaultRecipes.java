@@ -1,19 +1,22 @@
-package plugin.commands;
+package plugin.commands.reciperandomizer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import plugin.PluginConfig;
 
-public class SetDeleteChunkPenalty implements CommandExecutor {
+import static org.bukkit.Bukkit.getServer;
+
+public class SetDefaultRecipes implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
         if (!(sender instanceof Player))
             return true;
 
-        PluginConfig.getInstance().setDeleteChunkPenaltySeconds(Integer.parseInt(args[0]));
+        getServer().resetRecipes();
+        Bukkit.broadcastMessage("Set all recipes to default");
 
         return true;
     }

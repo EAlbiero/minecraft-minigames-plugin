@@ -1,4 +1,4 @@
-package plugin.commands;
+package plugin.commands.deathswap;
 
 import plugin.CustomPlugin;
 import org.bukkit.Bukkit;

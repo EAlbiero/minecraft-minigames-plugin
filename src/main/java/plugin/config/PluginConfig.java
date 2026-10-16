@@ -1,4 +1,4 @@
-package plugin;
+package plugin.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,9 +6,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class PluginConfig {
+    @Getter
     private static final PluginConfig instance = new PluginConfig();
 
     // Settings
+
+    // Chunk Deletion
     private volatile boolean deleteChunkEnabled = false;
     private volatile int deleteChunkDelaySeconds = 5;
     private volatile int deleteChunkPenaltySeconds = 2;
@@ -16,7 +19,4 @@ public final class PluginConfig {
 
     private PluginConfig() {}
 
-    public static PluginConfig getInstance() {
-        return instance;
-    }
 }

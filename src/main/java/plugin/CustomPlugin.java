@@ -3,7 +3,15 @@ package plugin;
 import plugin.commands.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import plugin.handlers.ChunkDamageHandler;
+import plugin.commands.Coord;
+import plugin.commands.reciperandomizer.RandomizeRecipes;
+import plugin.commands.reciperandomizer.SetDefaultRecipes;
+import plugin.commands.chunkdeletion.SetDeleteChunkDelay;
+import plugin.commands.chunkdeletion.SetDeleteChunkPenalty;
+import plugin.commands.blockshuffle.StartBlockShuffle;
+import plugin.commands.deathswap.StartDeathSwap;
+import plugin.commands.chunkdeletion.ToggleDeleteChunkOnDamage;
+import plugin.handlers.chunkdeletion.PlayerDamageHandler;
 import plugin.handlers.PlayerDeathHandler;
 
 public final class CustomPlugin extends JavaPlugin {
@@ -14,7 +22,7 @@ public final class CustomPlugin extends JavaPlugin {
         Bukkit.getLogger().info("starting");
 
         // Handlers
-        new ChunkDamageHandler(this);
+        new PlayerDamageHandler(this);
         new PlayerDeathHandler(this);
 
         // Challenges
